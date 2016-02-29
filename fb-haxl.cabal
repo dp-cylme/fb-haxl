@@ -3,7 +3,7 @@ version:             0.1.0.0
 synopsis:            facebook api client
 description:         Please see README.md
 homepage:            http://github.com/dp-cylme/fb-haxl#readme
-license:             BSD3
+license:             MIT
 license-file:        LICENSE
 author:              Danil Petrov
 maintainer:          dpetrov@cyl.me
