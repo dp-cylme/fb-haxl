@@ -8,7 +8,7 @@ import Data.Typeable (Typeable)
 import Data.Hashable (Hashable(..))
 import Facebook
        (Id(..), Page(..), Credentials, AccessToken(..), FacebookT,
-        getPage, runFacebookT, Argument, Post, getPagePosts, Pager,
+        getPage, runFacebookT, Argument, Post, getPagePosts, Pager(..),
         fetchNextPage, getLikes, User, Comment, getComments, getSharedPosts)
 import Network.HTTP.Conduit (Manager)
 import Control.Concurrent.QSem (newQSem, QSem, waitQSem, signalQSem)
@@ -60,6 +60,7 @@ instance Hashable (FacebookReq a) where
         hashWithSalt s (3 :: Int, pid)
     hashWithSalt s (GetSharedPosts (Id pid) _ _) =
         hashWithSalt s (4 :: Int, pid)
+    hashWithSalt s (GetNextPager p) = hashWithSalt s (5 :: Int, pagerNext p)
 
 
 instance StateKey FacebookReq where
