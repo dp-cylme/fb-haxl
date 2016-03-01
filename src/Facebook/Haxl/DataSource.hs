@@ -3,6 +3,7 @@
      FlexibleInstances, RankNTypes #-}
 module Facebook.Haxl.DataSource where
 
+import Data.Aeson (FromJSON)
 import Data.Typeable (Typeable)
 import Data.Hashable (Hashable(..))
 import Facebook
@@ -23,19 +24,14 @@ data FacebookReq a where
           Id -> [Argument] -> AccessToken anyKind -> FacebookReq Page
         GetPagePosts ::
           Id -> [Argument] -> AccessToken anyKind -> FacebookReq (Pager Post)
-        GetNextPagePosts :: Pager Post -> FacebookReq (Maybe (Pager Post))
         GetPostLikes ::
           Id -> [Argument] -> AccessToken anyKind -> FacebookReq (Pager User)
-        GetNextPostLikes :: Pager User -> FacebookReq (Maybe (Pager User))
+        GetNextPager :: (Show b, FromJSON b) => Pager b -> FacebookReq (Maybe (Pager b))
         GetPostComments ::
           Id ->
             [Argument] -> AccessToken anyKind -> FacebookReq (Pager Comment)
-        GetNextPostComments ::
-          Pager Comment -> FacebookReq (Maybe (Pager Comment))
         GetSharedPosts ::
           Id -> [Argument] -> AccessToken anyKind -> FacebookReq (Pager Post)
-        GetNextSharedPosts ::
-          Pager Post -> FacebookReq (Maybe (Pager Post))
     deriving Typeable
 
 instance Eq (FacebookReq a) where
@@ -109,11 +105,8 @@ fetchAsync creds manager sem (BlockedFetch req rvar) =
 fetchReq :: FacebookReq a -> FacebookT anyAuth (ResourceT IO) a
 fetchReq (GetPage pid args tok) = getPage pid args (Just tok)
 fetchReq (GetPagePosts pid args tok) = getPagePosts pid args (Just tok)
-fetchReq (GetNextPagePosts pager) = fetchNextPage pager
 fetchReq (GetPostLikes pid args tok) = getLikes pid args tok
-fetchReq (GetNextPostLikes pager) = fetchNextPage pager
+fetchReq (GetNextPager pager) = fetchNextPage pager
 fetchReq (GetPostComments pid args tok) = getComments pid args tok
-fetchReq (GetNextPostComments pager) = fetchNextPage pager
 fetchReq (GetSharedPosts pid args tok) = getSharedPosts pid args tok
-fetchReq (GetNextSharedPosts pager) = fetchNextPage pager
 
